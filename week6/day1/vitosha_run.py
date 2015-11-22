@@ -1,131 +1,48 @@
-class VitoshaRun:
+def Dijkstra(matrix, matrix_len, start, end):
+    dist = {(i, j): None for i in range(matrix_len)
+                              for j in range(matrix_len)}
+    dist[start] = 0
 
-    def __init__(self, num, start_end, map):
-        self.num = num
-        self.start_end = start_end
-        self.map = map
-        self.graph = {}
-        self.shortest_dist = {}
+    directions = {(x, y) for x in [-1, 0, 1]
+                         for y in [-1, 0, 1]}
 
-    def construct_graph(self):
-        graph_temp = []
-        for i in range(self.num):
-            for j in range(self.num):
-                if i > 0:
-                    graph_temp.append([(i - 1, j), abs(self.map[i][j] - self.map[i - 1][j]) + 1])
-                if i > 0 and j > 0:
-                    graph_temp.append([(i - 1, j - 1), abs(self.map[i][j] - self.map[i - 1][j - 1]) + 1])
-                if i > 0 and j < self.num - 1:
-                    graph_temp.append([(i - 1, j + 1), abs(self.map[i][j] - self.map[i - 1][j + 1]) + 1])
-                if j > 0:
-                    graph_temp.append([(i, j - 1), abs(self.map[i][j] - self.map[i][j - 1]) + 1])
-                if j < self.num - 1:
-                    graph_temp.append([(i, j + 1), abs(self.map[i][j] - self.map[i][j + 1]) + 1])
-                if i < self.num - 1:
-                    graph_temp.append([(i + 1, j), abs(self.map[i][j] - self.map[i + 1][j]) + 1])
-                if i < self.num - 1 and j > 0:
-                    graph_temp.append([(i + 1, j - 1), abs(self.map[i][j] - self.map[i + 1][j - 1]) + 1])
-                if i < self.num - 1 and j < self.num - 1:
-                    graph_temp.append([(i + 1, j + 1), abs(self.map[i][j] - self.map[i + 1][j + 1]) + 1])
-                self.graph[(i, j)] = graph_temp
-                graph_temp = []
+    visited = set()
 
-    def vitosha_run(self):
-        start = self.start_end[0]
-        end = self.start_end[1]
-        vertices = [(x, y) for x in range(self.num) for y in range(self.num)]
-        self.graph[start].append([start, 0])
-        print vertices
-        initial_connections = self.graph[start]
-        print initial_connections
-        while len(self.graph[start]) != self.num**2:
-            temp = []
-            count = 0
-            for conn in initial_connections:
-                for i in range(len(self.graph[conn[0]])):
-                    for j in range(len(self.graph[start])):
-                        if self.graph[conn[0]][i][0] == self.graph[start][j][0] and conn[1] + self.graph[conn[0]][i][1] < self.graph[start][j][1]:
-                            self.graph[start][j][1] = conn[1] + self.graph[conn[0]][i][1]
-                            count += 1
-                        elif self.graph[conn[0]][i][0] == self.graph[start][j][0]:
-                            count += 1
+    queue = list()
+    queue.append(start)
+    while queue:
+        si, sj = queue[0]
+        for dtn in directions:
+            di, dj = dtn
+            ind1 = si + di
+            ind2 = sj + dj
+            if (ind1, ind2) not in visited:
+                if ind1 >= 0 and ind1 < matrix_len and ind2 >= 0 and ind2 < matrix_len:
+                    if dist[(ind1, ind2)] == None:
+                        dist[(ind1, ind2)] = dist[(si, sj)] + abs(matrix[si][sj] - matrix[ind1][ind2]) + 1
+                    elif dist[(ind1, ind2)] > dist[(si, sj)] + abs(matrix[si][sj] - matrix[ind1][ind2]) + 1:
+                        dist[(ind1, ind2)] = dist[(si, sj)] + abs(matrix[si][sj] - matrix[ind1][ind2]) + 1
 
-                    if count == 0:
-                        new_connection = self.graph[conn[0]][i]
-                        new_connection[1] += conn[1]
-                        self.graph[start].append(new_connection)
-                        temp.append(new_connection)
-                    count = 0
-                print self.graph[start]
-            initial_connections = temp
-
-
-        return self.graph[start]
-
-    def construct_graph2(self):
-        graph_temp = []
-        for i in range(self.num):
-            for j in range(self.num):
-                if i > 0:
-                    graph_temp.append(((i - 1, j), abs(self.map[i][j] - self.map[i - 1][j]) + 1))
-                if i > 0 and j > 0:
-                    graph_temp.append(((i - 1, j - 1), abs(self.map[i][j] - self.map[i - 1][j - 1]) + 1))
-                if i > 0 and j < self.num - 1:
-                    graph_temp.append(((i - 1, j + 1), abs(self.map[i][j] - self.map[i - 1][j + 1]) + 1))
-                if j > 0:
-                    graph_temp.append(((i, j - 1), abs(self.map[i][j] - self.map[i][j - 1]) + 1))
-                if j < self.num - 1:
-                    graph_temp.append(((i, j + 1), abs(self.map[i][j] - self.map[i][j + 1]) + 1))
-                if i < self.num - 1:
-                    graph_temp.append(((i + 1, j), abs(self.map[i][j] - self.map[i + 1][j]) + 1))
-                if i < self.num - 1 and j > 0:
-                    graph_temp.append(((i + 1, j - 1), abs(self.map[i][j] - self.map[i + 1][j - 1]) + 1))
-                if i < self.num - 1 and j < self.num - 1:
-                    graph_temp.append(((i + 1, j + 1), abs(self.map[i][j] - self.map[i + 1][j + 1]) + 1))
-                self.graph[(i, j)] = graph_temp
-                graph_temp = []
-
-
-    def vitosha_run2(self):
-        current = self.start_end[0]
-        target = self.start_end[1]
-        unvisited = [(x, y) for x in range(self.num) for y in range(self.num)]
-        for node in unvisited:
-            self.shortest_dist[node] = 'inf'
-        self.shortest_dist[current] = 0
-        while self.shortest_dist[target] == 'inf':
-            index = None
-            min_el = None
-            print unvisited
-            print current
-            unvisited.remove(current)
-            for conn in range(len(self.graph[current])):
-                if self.graph[current][conn][0] in unvisited:
-                    min_el = self.graph[current][conn][1]
-                    index = conn
-                    break
-
-            for conn in range(len(self.graph[current])):
-                if self.graph[current][conn][0] in unvisited and self.graph[current][conn][1] < min_el:
-                    min_el = self.graph[current][conn][1]
-                    index = conn
-
-            self.shortest_dist[self.graph[current][index][0]] = 0
-            self.shortest_dist[self.graph[current][index][0]] += self.shortest_dist[current] + min_el
-
-            #print current
-            current = self.graph[current][index][0]
+                    if (ind1, ind2) not in queue:
+                        queue.append((ind1, ind2))
+        visited.add((si, sj))
+        queue.pop(0)
+    return dist[end]
 
 
 
 
 def main():
-    v = VitoshaRun(6, [(0, 0), (5, 5)], [[5, 3, 1, 4, 6, 7], [8, 1, 5, 6, 3, 1], [9, 8, 5, 1, 5, 2],
-                                         [0, 9, 1, 3, 5, 8], [5, 2, 5, 7, 1, 7], [9, 8, 1, 4, 3, 9]])
-    v.construct_graph2()
-    print v.graph
-    #print v.vitosha_run()
-    print v.vitosha_run2()
+    matrix_len = int(input())
+    start_end = [int(x) for x in input().split()]
+    start, end = [(start_end[i], start_end[i + 1])
+                  for i in range(0, len(start_end), 2)]
+    matrix = []
+    for i in range(matrix_len):
+        row = [int(x) for x in input().split()]
+        matrix.append(row)
+    print(Dijkstra(matrix, matrix_len, start, end))
+
 
 if __name__ == '__main__':
     main()
